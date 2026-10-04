@@ -7,6 +7,10 @@
     .box { width: 20px; background: navy; }
     .comparing { background: tomato; }
     .sorted { background: aquamarine; }
+    .box { color: white; font-size: 10px; text-align: center; }
+    .dim { opacity: 0.25; }
+    .mid { background: thistle; }
+    .found { background: limegreen; }
   </style>
 </head>
 <body>
@@ -15,6 +19,9 @@
   <button onclick="autosort()">autosort</button>
   <button id="pauseBtn" onclick="togglePause()">Pause</button>
   <button onclick="nextStep()">Next step</button>
+  <br>
+  <input type="number" id="target" placeholder="Target" style="width:70px">
+  <button onclick="startBinarySearch()">Binary search</button>
   
   <p>Slow <input type="range" id="speed" min="50" max="1000" value="800"> Fast</p>
   <p id="status">Tap Generate to start</p>
@@ -118,6 +125,78 @@
     drawBars();
     running = false;
   }
+
+function drawSearchBars(low, mid, high, foundIndex) {
+  let container = document.getElementById("bars");
+  container.innerHTML = "";
+
+  for (let i = 0; i < numbers.length; i++) {
+    let bar = document.createElement("div");
+    bar.className = "box";
+    bar.innerText = numbers[i];
+
+    if (i < low || i > high) bar.className = "box dim";
+    if (i === mid) bar.className = "box mid";
+    if (i === foundIndex) bar.className = "box found";
+
+    bar.style.height = numbers[i] * 5 + "px";
+    container.appendChild(bar);
+  }
+}
+
+async function startBinarySearch() {
+  if (running) return;
+  let status = document.getElementById("status");
+  let target = parseInt(document.getElementById("target").value);
+
+  if (numbers.length === 0) {
+    status.innerText = "Tap Generate first";
+    return;
+  }
+  if (isNaN(target)) {
+    status.innerText = "Type a target number first";
+    return;
+  }
+  for (let i = 0; i < numbers.length - 1; i++) {
+    if (numbers[i] > numbers[i + 1]) {
+      status.innerText = "Array is not sorted. Run autosort first";
+      return;
+    }
+  }
+
+  running = true;
+  let low = 0;
+  let high = numbers.length - 1;
+  let foundIndex = -1;
+
+  while (low <= high) {
+    await waitIfPaused();
+    let mid = Math.floor((low + high) / 2);
+    drawSearchBars(low, mid, high, -1);
+
+    if (numbers[mid] === target) {
+      foundIndex = mid;
+      status.innerText = "mid = " + numbers[mid] + " equals " + target + ": found!";
+      break;
+    } else if (numbers[mid] < target) {
+      status.innerText = "mid = " + numbers[mid] + " is less than " + target + ", so move low right";
+      await sleep(getDelay());
+      low = mid + 1;
+    } else {
+      status.innerText = "mid = " + numbers[mid] + " is greater than " + target + ", so move high left";
+      await sleep(getDelay());
+      high = mid - 1;
+    }
+  }
+
+  if (foundIndex === -1) {
+    status.innerText = target + " is not in the array";
+    drawSearchBars(0, -1, -1, -1);
+  } else {
+    drawSearchBars(0, -1, numbers.length - 1, foundIndex);
+  }
+  running = false;
+}
   </script>
 </body>
 </html>
