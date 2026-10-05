@@ -13,6 +13,10 @@
     .found { background: limegreen; }
     .stackItem { width: 80px; padding: 8px; margin: 2px 0; background: thistle; color: white; text-align: center; }
     .top { background: hwb(156 14% 6%); }
+    .queueRow { display: flex; gap: 4px; }
+    .qItem { width: 40px; padding: 8px 0; background: navy; color: white; text-align: center; }
+    .front { background: tomato; }
+    .back { background: orange; }
   </style>
 </head>
 <body>
@@ -37,6 +41,14 @@
   <button onclick="stackPeek()">Peek</button>
   <p id="stackStatus">Stack is empty</p>
   <div id="stackBox"></div>
+  <hr>
+  <h2>Queue</h2>
+  <input type="number" id="queueInput" placeholder="Value" style="width:70px">
+  <button onclick="enqueue()">Enqueue</button>
+  <button onclick="dequeue()">Dequeue</button>
+  <p id="queueStatus">Queue is empty</p>
+  <div class="queueRow" id="queueBox"></div>
+  <p>RED = FRONT, ORANGE = BACK</p>
 
   <script>
     let numbers = [];
@@ -262,6 +274,53 @@ function stackPeek() {
     return;
   }
   status.innerText = "Top is " + stack[stack.length - 1] + " (not removed)";
+}
+
+let queue = [];
+const QUEUE_MAX = 8;
+
+function drawQueue() {
+  let container = document.getElementById("queueBox");
+  container.innerHTML = "";
+
+  for (let i = 0; i < queue.length; i++) {
+    let item = document.createElement("div");
+    item.className = "qItem";
+    if (i === queue.length - 1) item.className = "qItem back";
+    if (i === 0) item.className = "qItem front";
+    item.innerText = queue[i];
+    container.appendChild(item);
+  }
+}
+
+function enqueue() {
+  let status = document.getElementById("queueStatus");
+  let input = document.getElementById("queueInput");
+  let value = parseInt(input.value);
+
+  if (isNaN(value)) {
+    status.innerText = "Type a number first";
+    return;
+  }
+  if (queue.length >= QUEUE_MAX) {
+    status.innerText = "Queue is full, cannot add " + value;
+    return;
+  }
+  queue.push(value);
+  status.innerText = "Enqueued " + value + " at the back";
+  input.value = "";
+  drawQueue();
+}
+
+function dequeue() {
+  let status = document.getElementById("queueStatus");
+  if (queue.length === 0) {
+    status.innerText = "Queue is empty, nothing to remove";
+    return;
+  }
+  let removed = queue.shift();
+  status.innerText = "Dequeued " + removed + " from the front (first in, first out)";
+  drawQueue();
 }
   </script>
 </body>
