@@ -11,6 +11,8 @@
     .dim { opacity: 0.25; }
     .mid { background: thistle; }
     .found { background: limegreen; }
+    .stackItem { width: 80px; padding: 8px; margin: 2px 0; background: thistle; color: white; text-align: center; }
+    .top { background: hwb(156 14% 6%); }
   </style>
 </head>
 <body>
@@ -27,6 +29,14 @@
   <p id="status">Tap Generate to start</p>
   <div class="row" id="bars"></div>
   <p>RED = COMPARING, AQUAMARINE = SORTED</p>
+  <hr>
+  <h2>Stack</h2>
+  <input type="number" id="stackInput" placeholder="Value" style="width:70px">
+  <button onclick="stackPush()">Push</button>
+  <button onclick="stackPop()">Pop</button>
+  <button onclick="stackPeek()">Peek</button>
+  <p id="stackStatus">Stack is empty</p>
+  <div id="stackBox"></div>
 
   <script>
     let numbers = [];
@@ -196,6 +206,62 @@ async function startBinarySearch() {
     drawSearchBars(0, -1, numbers.length - 1, foundIndex);
   }
   running = false;
+}
+
+let stack = [];
+const STACK_MAX = 8;
+
+function drawStack() {
+  let container = document.getElementById("stackBox");
+  container.innerHTML = "";
+
+  // draw from top to bottom, so the newest item appears first
+  for (let i = stack.length - 1; i >= 0; i--) {
+    let item = document.createElement("div");
+    item.className = "stackItem";
+    if (i === stack.length - 1) item.className = "stackItem top";
+    item.innerText = stack[i];
+    container.appendChild(item);
+  }
+}
+
+function stackPush() {
+  let status = document.getElementById("stackStatus");
+  let input = document.getElementById("stackInput");
+  let value = parseInt(input.value);
+
+  if (isNaN(value)) {
+    status.innerText = "Type a number first";
+    return;
+  }
+  if (stack.length >= STACK_MAX) {
+    status.innerText = "Stack Overflow: stack is full, cannot push " + value;
+    return;
+  }
+  stack.push(value);
+  status.innerText = "Pushed " + value + " on top";
+  input.value = "";
+  drawStack();
+}
+
+function stackPop() {
+  let status = document.getElementById("stackStatus");
+  if (stack.length === 0) {
+    status.innerText = "Stack Underflow: nothing to pop";
+    return;
+  }
+  let removed = stack.pop();
+  status.innerText = "Popped " + removed + " (last in, first out)";
+  drawStack();
+}
+
+function stackPeek() {
+  let status = document.getElementById("stackStatus");
+  if (stack.length === 0) {
+    status.innerText = "Stack is empty, nothing to peek";
+    return;
+  }
+  status.innerText = "Top is " + stack[stack.length - 1] + " (not removed)";
 }
   </script>
 </body>
