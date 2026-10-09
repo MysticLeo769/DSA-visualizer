@@ -1,27 +1,32 @@
 # DSA Visualizer
 
-This project is made for both students and teachers, because for teachers it gets hard to explain the process happening in he computer and students get hard time visualising it. DSA is a kind of topic that needs to be visualised, for better and fundamental understanding.
+An interactive tool that shows how data structures and algorithms work, step by step. Built for students who struggle to picture what happens inside the computer, and for teachers who want to explain it visually.
 
 ## Features
-- Visualizes sorting algorithms step by step
+- Step-by-step visualization of sorting algorithms
+- (add: speed control, custom array input, other algorithms, etc.)
 
 ## Demo
 
 
-![screenshot](screenshot_1.jpg)
-![screenshot](screenshot_2.jpg)
+![Sorting visualization](screenshot_1.jpg)
+
+
+
+
+![Step-by-step view](screenshot_2.jpg)
 
 
 
 ## How to run
-1. Clone the repo
-2. Command to run it
+1. Download or clone this repo
+2. Open `index.html` in any browser (no installation needed)
 
 ## Built with
-languages:- 1.javascript 2.HTML 3.CSS 
+JavaScript, HTML, CSS
 
 ## What I learned
-I learned javascript, html&css throught this project, also the working algorithms of different data structures.
+Through this project I learned JavaScript, HTML and CSS, and how sorting algorithms and other DSA concepts work internally. I built it entirely on my phone.
 
 ## Author
-Ayush Kumar, [https://www.linkedin.com/in/ayush-kumar-8610a5358?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app]
+Ayush Kumar - [LinkedIn](https://www.linkedin.com/in/ayush-kumar-8610a5358)
