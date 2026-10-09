@@ -8,7 +8,8 @@ This project is made for both students and teachers, because for teachers it get
 ## Demo
 
 
-![screenshot](screenshot.png)
+![screenshot](screenshot_1.jpg)
+![screenshot](screenshot_2.jpg)
 
 
 
