@@ -62,6 +62,11 @@
   <button onclick="deleteValue()">Delete value</button>
   <p id="llStatus"></p>
   <div id="llArea"></div>
+  <hr>
+  <h2>Graph (BFS / DFS)</h2>
+  <svg id="graphSvg" viewBox="0 0 320 240"
+     style="width:100%;max-width:360px;border:1px solid #ccc"></svg>
+  <p id="graphStatus">Graph ready.</p>
 
   <script>
     let numbers = [];
@@ -437,6 +442,52 @@ function drawList() {
   }
 }
 
+// ---------- GRAPH ----------
+const graphNodes = [
+  { label: "A", x: 160, y: 40 },
+  { label: "B", x: 70,  y: 110 },
+  { label: "C", x: 250, y: 110 },
+  { label: "D", x: 70,  y: 200 },
+  { label: "E", x: 250, y: 200 },
+  { label: "F", x: 160, y: 150 }
+];
+
+// adjacency list: node index -> neighbour indexes
+const graph = {
+  0: [1, 2],
+  1: [0, 3, 5],
+  2: [0, 4, 5],
+  3: [1],
+  4: [2],
+  5: [1, 2]
+};
+
+let nodeColors = {}; // index -> colour (BFS/DFS will use this)
+
+function drawGraph() {
+  let html = "";
+  // edges first, so circles sit on top
+  for (let i = 0; i < graphNodes.length; i++) {
+    for (const j of graph[i]) {
+      if (j > i) {
+        html += `<line x1="${graphNodes[i].x}" y1="${graphNodes[i].y}"
+                       x2="${graphNodes[j].x}" y2="${graphNodes[j].y}"
+                       stroke="#888" stroke-width="2"/>`;
+      }
+    }
+  }
+  // nodes
+  for (let i = 0; i < graphNodes.length; i++) {
+    const n = graphNodes[i];
+    const fill = nodeColors[i] || "#e0e0e0";
+    html += `<circle cx="${n.x}" cy="${n.y}" r="20" fill="${fill}" stroke="#333" stroke-width="2"/>
+             <text x="${n.x}" y="${n.y + 5}" text-anchor="middle"
+                   font-size="16" font-weight="bold">${n.label}</text>`;
+  }
+  document.getElementById("graphSvg").innerHTML = html;
+}
+
+drawGraph();
 drawList();
   </script>
 </body>
