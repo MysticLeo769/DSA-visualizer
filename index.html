@@ -17,6 +17,10 @@
     .qItem { width: 40px; padding: 8px 0; background: navy; color: white; text-align: center; }
     .front { background: tomato; }
     .back { background: orange; }
+    #llArea { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+    .ll-node { min-width: 40px; padding: 10px; text-align: center; border: 2px solid #333; border-radius: 6px; background: #eee; }
+    .ll-head { background: orange; }
+    .ll-tail { background: #7ddc7d; }
   </style>
 </head>
 <body>
@@ -46,9 +50,18 @@
   <input type="number" id="queueInput" placeholder="Value" style="width:70px">
   <button onclick="enqueue()">Enqueue</button>
   <button onclick="dequeue()">Dequeue</button>
-  <p id="queueStatus">Queue is empty</p>
+  <p id="queueStatus">Queue is empty)</p>
   <div class="queueRow" id="queueBox"></div>
   <p>RED = FRONT, ORANGE = BACK</p>
+  <hr> 
+  <h2>Linked List</h2>
+  <input id="llValue" type="number" placeholder="Value">
+  <button onclick="insertHead()">Insert head</button>
+  <button onclick="insertTail()">Insert tail</button>
+  <button onclick="deleteHead()">Delete head</button>
+  <button onclick="deleteValue()">Delete value</button>
+  <p id="llStatus"></p>
+  <div id="llArea"></div>
 
   <script>
     let numbers = [];
@@ -322,6 +335,109 @@ function dequeue() {
   status.innerText = "Dequeued " + removed + " from the front (first in, first out)";
   drawQueue();
 }
+
+let llHead = null;
+let llSize = 0;
+const LL_MAX = 8;
+
+function makeNode(value) {
+  return { value: value, next: null };
+}
+
+function readLLValue() {
+  const box = document.getElementById("llValue");
+  if (box.value === "") {
+    llStatus("Type a value first.");
+    return null;
+  }
+  const v = Number(box.value);
+  box.value = "";
+  return v;
+}
+
+function llStatus(msg) {
+  document.getElementById("llStatus").textContent = msg;
+}
+
+function insertHead() {
+  const v = readLLValue();
+  if (v === null) return;
+  if (llSize >= LL_MAX) { llStatus("List is full (limit 8)."); return; }
+  const node = makeNode(v);
+  node.next = llHead;   // new node points to the old head
+  llHead = node;        // head now points to the new node
+  llSize++;
+  llStatus("Inserted " + v + " at head.");
+  drawList();
+}
+
+function insertTail() {
+  const v = readLLValue();
+  if (v === null) return;
+  if (llSize >= LL_MAX) { llStatus("List is full (limit 8)."); return; }
+  const node = makeNode(v);
+  if (llHead === null) {
+    llHead = node;
+  } else {
+    let cur = llHead;
+    while (cur.next !== null) cur = cur.next;  // walk to the last node
+    cur.next = node;
+  }
+  llSize++;
+  llStatus("Inserted " + v + " at tail.");
+  drawList();
+}
+
+function deleteHead() {
+  if (llHead === null) { llStatus("Underflow: list is empty."); return; }
+  const removed = llHead.value;
+  llHead = llHead.next;
+  llSize--;
+  llStatus("Deleted head (" + removed + ").");
+  drawList();
+}
+
+function deleteValue() {
+  const v = readLLValue();
+  if (v === null) return;
+  if (llHead === null) { llStatus("Underflow: list is empty."); return; }
+  if (llHead.value === v) {
+    llHead = llHead.next;
+  } else {
+    let prev = llHead;
+    while (prev.next !== null && prev.next.value !== v) prev = prev.next;
+    if (prev.next === null) { llStatus(v + " not found."); return; }
+    prev.next = prev.next.next;  // skip over the deleted node
+  }
+  llSize--;
+  llStatus("Deleted " + v + ".");
+  drawList();
+}
+
+function drawList() {
+  const area = document.getElementById("llArea");
+  area.innerHTML = "";
+  if (llHead === null) {
+    area.textContent = "HEAD → NULL (empty list)";
+    return;
+  }
+  let cur = llHead;
+  while (cur !== null) {
+    const box = document.createElement("div");
+    box.className = "ll-node";
+    if (cur === llHead) box.classList.add("ll-head");
+    if (cur.next === null) box.classList.add("ll-tail");
+    box.textContent = cur.value;
+    area.appendChild(box);
+
+    const arrow = document.createElement("span");
+    arrow.textContent = cur.next ? "→" : "→ NULL";
+    area.appendChild(arrow);
+    cur = cur.next;
+  }
+}
+
+drawList();
   </script>
 </body>
 </html>
