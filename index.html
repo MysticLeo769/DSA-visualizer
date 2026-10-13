@@ -69,6 +69,7 @@
   <p id="graphStatus">Graph ready.</p>
   <button onclick="runBFS()">Start BFS</button>
   <button onclick="resetGraph()">Reset</button>
+  <button onclick="runDFS()">Start DFS</button>
 
   <script>
     let numbers = [];
@@ -546,6 +547,50 @@ async function runBFS() {
   }
 
   graphMsg("BFS done. Order: " + labels(order));
+  running = false;
+}
+
+async function runDFS() {
+  if (running) return;
+  running = true;
+  nodeColors = {};
+
+  const start = 0;
+  const visited = new Set([start]);
+  const stack = [start];
+  const order = [];
+  nodeColors[start] = "#ffe082";
+  drawGraph();
+  graphMsg("Start at A. Stack: " + labels(stack));
+  await waitIfPaused();
+  await sleep(getDelay());
+
+  while (stack.length > 0) {
+    const cur = stack.pop();       // take from the TOP
+    nodeColors[cur] = "orange";
+    drawGraph();
+    graphMsg("Visiting " + graphNodes[cur].label + ". Stack: " + labels(stack));
+    await waitIfPaused();
+    await sleep(getDelay());
+
+    for (const nb of graph[cur]) {
+      if (!visited.has(nb)) {
+        visited.add(nb);
+        stack.push(nb);            // add on TOP
+        nodeColors[nb] = "#ffe082";
+        drawGraph();
+        graphMsg("Found " + graphNodes[nb].label + ", added. Stack: " + labels(stack));
+        await waitIfPaused();
+        await sleep(getDelay());
+      }
+    }
+
+    nodeColors[cur] = "#81c784";
+    order.push(cur);
+    drawGraph();
+  }
+
+  graphMsg("DFS done. Order: " + labels(order));
   running = false;
 }
 drawList();
