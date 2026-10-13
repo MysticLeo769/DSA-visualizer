@@ -67,6 +67,8 @@
   <svg id="graphSvg" viewBox="0 0 320 240"
      style="width:100%;max-width:360px;border:1px solid #ccc"></svg>
   <p id="graphStatus">Graph ready.</p>
+  <button onclick="runBFS()">Start BFS</button>
+  <button onclick="resetGraph()">Reset</button>
 
   <script>
     let numbers = [];
@@ -486,8 +488,66 @@ function drawGraph() {
   }
   document.getElementById("graphSvg").innerHTML = html;
 }
-
 drawGraph();
+
+function labels(list) {
+  return list.map(i => graphNodes[i].label).join(", ");
+}
+
+function graphMsg(msg) {
+  document.getElementById("graphStatus").textContent = msg;
+}
+
+function resetGraph() {
+  if (running) return;
+  nodeColors = {};
+  drawGraph();
+  graphMsg("Graph ready.");
+}
+
+async function runBFS() {
+  if (running) return;
+  running = true;
+  nodeColors = {};
+
+  const start = 0;                 // node A
+  const visited = new Set([start]);
+  const queue = [start];
+  const order = [];
+  nodeColors[start] = "#ffe082";   // yellow = in queue
+  drawGraph();
+  graphMsg("Start at A. Queue: " + labels(queue));
+  await waitIfPaused();
+  await sleep(getDelay());
+
+  while (queue.length > 0) {
+    const cur = queue.shift();     // take from the FRONT
+    nodeColors[cur] = "orange";    // orange = visiting
+    drawGraph();
+    graphMsg("Visiting " + graphNodes[cur].label + ". Queue: " + labels(queue));
+    await waitIfPaused();
+    await sleep(getDelay());
+
+    for (const nb of graph[cur]) {
+      if (!visited.has(nb)) {
+        visited.add(nb);
+        queue.push(nb);            // add to the BACK
+        nodeColors[nb] = "#ffe082";
+        drawGraph();
+        graphMsg("Found " + graphNodes[nb].label + ", added. Queue: " + labels(queue));
+        await waitIfPaused();
+        await sleep(getDelay());
+      }
+    }
+
+    nodeColors[cur] = "#81c784";   // green = done
+    order.push(cur);
+    drawGraph();
+  }
+
+  graphMsg("BFS done. Order: " + labels(order));
+  running = false;
+}
 drawList();
   </script>
 </body>
