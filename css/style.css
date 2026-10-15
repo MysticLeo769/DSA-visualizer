@@ -1,1 +1,88 @@
+:root{
+  --navy:#0b1426; --blue:#2b7de9; --green:#22a559;
+  --orange:#f59a23; --red:#e5383b;
+  --bg:#f4f6fb; --card:#fff; --text:#16213a; --muted:#6b7487;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg); color:var(--text);
+  padding-bottom:72px; /* room for bottom nav */
+}
+a{text-decoration:none;color:inherit}
 
+/* Header + nav */
+.site-header{
+  background:var(--navy); color:#fff;
+  padding:14px 16px;
+}
+.logo{font-size:1.4rem;font-weight:800}
+.logo span{color:var(--orange)}
+.nav{
+  position:fixed; left:0; right:0; bottom:0;
+  background:var(--navy); display:flex;
+  justify-content:space-around; padding:8px 0;
+  z-index:10;
+}
+.nav a{
+  display:flex; flex-direction:column; align-items:center;
+  font-size:.75rem; color:#aab3c5; gap:2px;
+}
+.nav a .ico{font-size:1.3rem}
+.nav a.active{color:var(--blue)}
+
+/* Layout */
+.container{max-width:1000px;margin:0 auto;padding:16px}
+.card{
+  background:var(--card); border-radius:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.06); padding:16px;
+}
+
+/* Hero */
+.hero h1{font-size:2rem;line-height:1.15;margin:8px 0 10px}
+.hero p{color:var(--muted);margin-bottom:16px}
+.btn-row{display:flex;gap:12px}
+.btn{
+  flex:1; text-align:center; padding:14px 10px;
+  border-radius:14px; color:#fff; font-weight:700;
+}
+.btn-blue{background:var(--blue)}
+.btn-green{background:var(--green)}
+
+/* Topic cards */
+.topics{
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:10px; margin:18px 0;
+}
+.topic{
+  background:var(--card); border-radius:14px; text-align:center;
+  padding:14px 6px; font-weight:700; font-size:.85rem;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.topic .ico{display:block;font-size:2rem;margin-bottom:6px}
+.badge{text-align:center;font-weight:700}
+
+/* Laptop (768px and wider) */
+@media (min-width:768px){
+  body{padding-bottom:0}
+  .site-header{
+    display:flex; justify-content:space-between;
+    align-items:center; padding:14px 40px;
+  }
+  .nav{
+    position:static; background:none; padding:0; gap:28px;
+  }
+  .nav a{flex-direction:row; font-size:1rem; color:#fff}
+  .nav a .ico{display:none}
+  .nav a.active{color:var(--orange)}
+  .hero{
+    background:var(--navy); color:#fff;
+    padding:60px 40px; border-radius:0;
+  }
+  .hero p{color:#c4ccdc}
+  .hero h1{font-size:3rem}
+  .btn-row{max-width:460px}
+  .btn-blue{background:var(--orange)}
+  .btn-green{background:var(--blue)}
+  .topics{grid-template-columns:repeat(3,1fr);gap:16px}
+  }
