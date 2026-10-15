@@ -1,1 +1,599 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    .row { display: flex; gap: 8px; align-items: flex-end; }
+    .box { width: 20px; background: navy; }
+    .comparing { background: tomato; }
+    .sorted { background: aquamarine; }
+    .box { color: white; font-size: 10px; text-align: center; }
+    .dim { opacity: 0.25; }
+    .mid { background: thistle; }
+    .found { background: limegreen; }
+    .stackItem { width: 80px; padding: 8px; margin: 2px 0; background: thistle; color: white; text-align: center; }
+    .top { background: hwb(156 14% 6%); }
+    .queueRow { display: flex; gap: 4px; }
+    .qItem { width: 40px; padding: 8px 0; background: navy; color: white; text-align: center; }
+    .front { background: tomato; }
+    .back { background: orange; }
+    #llArea { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+    .ll-node { min-width: 40px; padding: 10px; text-align: center; border: 2px solid #333; border-radius: 6px; background: #eee; }
+    .ll-head { background: orange; }
+    .ll-tail { background: #7ddc7d; }
+  </style>
+</head>
+<body>
+  <h1>My Visualizer</h1>
+  <button onclick="generate()">Generate</button>
+  <button onclick="autosort()">autosort</button>
+  <button id="pauseBtn" onclick="togglePause()">Pause</button>
+  <button onclick="nextStep()">Next step</button>
+  <br>
+  <input type="number" id="target" placeholder="Target" style="width:70px">
+  <button onclick="startBinarySearch()">Binary search</button>
+  
+  <p>Slow <input type="range" id="speed" min="50" max="1000" value="800"> Fast</p>
+  <p id="status">Tap Generate to start</p>
+  <div class="row" id="bars"></div>
+  <p>RED = COMPARING, AQUAMARINE = SORTED</p>
+  <hr>
+  <h2>Stack</h2>
+  <input type="number" id="stackInput" placeholder="Value" style="width:70px">
+  <button onclick="stackPush()">Push</button>
+  <button onclick="stackPop()">Pop</button>
+  <button onclick="stackPeek()">Peek</button>
+  <p id="stackStatus">Stack is empty</p>
+  <div id="stackBox"></div>
+  <hr>
+  <h2>Queue</h2>
+  <input type="number" id="queueInput" placeholder="Value" style="width:70px">
+  <button onclick="enqueue()">Enqueue</button>
+  <button onclick="dequeue()">Dequeue</button>
+  <p id="queueStatus">Queue is empty)</p>
+  <div class="queueRow" id="queueBox"></div>
+  <p>RED = FRONT, ORANGE = BACK</p>
+  <hr> 
+  <h2>Linked List</h2>
+  <input id="llValue" type="number" placeholder="Value">
+  <button onclick="insertHead()">Insert head</button>
+  <button onclick="insertTail()">Insert tail</button>
+  <button onclick="deleteHead()">Delete head</button>
+  <button onclick="deleteValue()">Delete value</button>
+  <p id="llStatus"></p>
+  <div id="llArea"></div>
+  <hr>
+  <h2>Graph (BFS / DFS)</h2>
+  <svg id="graphSvg" viewBox="0 0 320 240"
+     style="width:100%;max-width:360px;border:1px solid #ccc"></svg>
+  <p id="graphStatus">Graph ready.</p>
+  <button onclick="runBFS()">Start BFS</button>
+  <button onclick="resetGraph()">Reset</button>
+  <button onclick="runDFS()">Start DFS</button>
 
+  <script>
+    let numbers = [];
+    let pos = 0;
+    let running = false;
+    let paused = false;
+    let stepOnce = false;
+    let sortedCount = 0;
+
+    function generate() {
+      if(running) return;
+      numbers = [];
+      pos=0;
+      sortedCount = 0;
+      document.getElementById("status").innerText = "New array ready";
+      
+      for (let i = 0; i < 15; i++) {
+        numbers.push(Math.floor(Math.random() * 41) + 10);
+      }
+      drawBars();
+    }
+
+    function drawBars(a, b) {
+      let container = document.getElementById("bars");
+      container.innerHTML = "";
+      
+      for (let i = 0; i < numbers.length; i++) {
+        let bar = document.createElement("div");
+        bar.className = "box";
+        
+        if (i >= numbers.length - sortedCount) {
+          bar.className = "box sorted";
+        }
+        
+        if (i === a || i === b) {
+          bar.className = "box comparing";
+        }
+      bar.style.height = numbers[i] * 5 + "px";
+      container.appendChild(bar);
+    }
+    }
+    
+    function sleep(ms){
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function getDelay() {
+      return 1050 - document.getElementById("speed").value;
+    }
+
+    async function waitIfPaused() {
+      while (paused && !stepOnce) {
+        await sleep(50);
+      }
+    stepOnce = false;
+    }
+
+    function togglePause() {
+      paused = !paused;
+      document.getElementById("pauseBtn").innerText = paused ? "Resume" : "Pause";
+    }
+
+    function nextStep() {
+      if (paused) stepOnce = true;
+    }
+
+    async function autosort() {
+      if (running) return;
+      running = true;
+      sortedCount = 0;
+      let status = document.getElementById("status");
+
+      let swapped = true;
+      while (swapped) {
+        swapped = false;
+        for (let i = 0; i < numbers.length - 1 - sortedCount; i++) {
+          await waitIfPaused();
+          let left = numbers[i];
+          let right = numbers[i + 1];
+
+        if (left > right) {
+          numbers[i] = right;
+          numbers[i + 1] = left;
+          swapped = true;
+          status.innerText = "Comparing " + left + " and " + right + ": " + left + " is bigger, so swap";
+        } else {
+          status.innerText = "Comparing " + left + " and " + right + ": already in order";
+        }
+        drawBars(i, i + 1);
+        await sleep(getDelay());
+      }
+      sortedCount++;
+    }
+    sortedCount = numbers.length;
+    status.innerText = "Sorted!";
+    drawBars();
+    running = false;
+  }
+
+function drawSearchBars(low, mid, high, foundIndex) {
+  let container = document.getElementById("bars");
+  container.innerHTML = "";
+
+  for (let i = 0; i < numbers.length; i++) {
+    let bar = document.createElement("div");
+    bar.className = "box";
+    bar.innerText = numbers[i];
+
+    if (i < low || i > high) bar.className = "box dim";
+    if (i === mid) bar.className = "box mid";
+    if (i === foundIndex) bar.className = "box found";
+
+    bar.style.height = numbers[i] * 5 + "px";
+    container.appendChild(bar);
+  }
+}
+
+async function startBinarySearch() {
+  if (running) return;
+  let status = document.getElementById("status");
+  let target = parseInt(document.getElementById("target").value);
+
+  if (numbers.length === 0) {
+    status.innerText = "Tap Generate first";
+    return;
+  }
+  if (isNaN(target)) {
+    status.innerText = "Type a target number first";
+    return;
+  }
+  for (let i = 0; i < numbers.length - 1; i++) {
+    if (numbers[i] > numbers[i + 1]) {
+      status.innerText = "Array is not sorted. Run autosort first";
+      return;
+    }
+  }
+
+  running = true;
+  let low = 0;
+  let high = numbers.length - 1;
+  let foundIndex = -1;
+
+  while (low <= high) {
+    await waitIfPaused();
+    let mid = Math.floor((low + high) / 2);
+    drawSearchBars(low, mid, high, -1);
+
+    if (numbers[mid] === target) {
+      foundIndex = mid;
+      status.innerText = "mid = " + numbers[mid] + " equals " + target + ": found!";
+      break;
+    } else if (numbers[mid] < target) {
+      status.innerText = "mid = " + numbers[mid] + " is less than " + target + ", so move low right";
+      await sleep(getDelay());
+      low = mid + 1;
+    } else {
+      status.innerText = "mid = " + numbers[mid] + " is greater than " + target + ", so move high left";
+      await sleep(getDelay());
+      high = mid - 1;
+    }
+  }
+
+  if (foundIndex === -1) {
+    status.innerText = target + " is not in the array";
+    drawSearchBars(0, -1, -1, -1);
+  } else {
+    drawSearchBars(0, -1, numbers.length - 1, foundIndex);
+  }
+  running = false;
+}
+
+let stack = [];
+const STACK_MAX = 8;
+
+function drawStack() {
+  let container = document.getElementById("stackBox");
+  container.innerHTML = "";
+
+  // draw from top to bottom, so the newest item appears first
+  for (let i = stack.length - 1; i >= 0; i--) {
+    let item = document.createElement("div");
+    item.className = "stackItem";
+    if (i === stack.length - 1) item.className = "stackItem top";
+    item.innerText = stack[i];
+    container.appendChild(item);
+  }
+}
+
+function stackPush() {
+  let status = document.getElementById("stackStatus");
+  let input = document.getElementById("stackInput");
+  let value = parseInt(input.value);
+
+  if (isNaN(value)) {
+    status.innerText = "Type a number first";
+    return;
+  }
+  if (stack.length >= STACK_MAX) {
+    status.innerText = "Stack Overflow: stack is full, cannot push " + value;
+    return;
+  }
+  stack.push(value);
+  status.innerText = "Pushed " + value + " on top";
+  input.value = "";
+  drawStack();
+}
+
+function stackPop() {
+  let status = document.getElementById("stackStatus");
+  if (stack.length === 0) {
+    status.innerText = "Stack Underflow: nothing to pop";
+    return;
+  }
+  let removed = stack.pop();
+  status.innerText = "Popped " + removed + " (last in, first out)";
+  drawStack();
+}
+
+function stackPeek() {
+  let status = document.getElementById("stackStatus");
+  if (stack.length === 0) {
+    status.innerText = "Stack is empty, nothing to peek";
+    return;
+  }
+  status.innerText = "Top is " + stack[stack.length - 1] + " (not removed)";
+}
+
+let queue = [];
+const QUEUE_MAX = 8;
+
+function drawQueue() {
+  let container = document.getElementById("queueBox");
+  container.innerHTML = "";
+
+  for (let i = 0; i < queue.length; i++) {
+    let item = document.createElement("div");
+    item.className = "qItem";
+    if (i === queue.length - 1) item.className = "qItem back";
+    if (i === 0) item.className = "qItem front";
+    item.innerText = queue[i];
+    container.appendChild(item);
+  }
+}
+
+function enqueue() {
+  let status = document.getElementById("queueStatus");
+  let input = document.getElementById("queueInput");
+  let value = parseInt(input.value);
+
+  if (isNaN(value)) {
+    status.innerText = "Type a number first";
+    return;
+  }
+  if (queue.length >= QUEUE_MAX) {
+    status.innerText = "Queue is full, cannot add " + value;
+    return;
+  }
+  queue.push(value);
+  status.innerText = "Enqueued " + value + " at the back";
+  input.value = "";
+  drawQueue();
+}
+
+function dequeue() {
+  let status = document.getElementById("queueStatus");
+  if (queue.length === 0) {
+    status.innerText = "Queue is empty, nothing to remove";
+    return;
+  }
+  let removed = queue.shift();
+  status.innerText = "Dequeued " + removed + " from the front (first in, first out)";
+  drawQueue();
+}
+
+let llHead = null;
+let llSize = 0;
+const LL_MAX = 8;
+
+function makeNode(value) {
+  return { value: value, next: null };
+}
+
+function readLLValue() {
+  const box = document.getElementById("llValue");
+  if (box.value === "") {
+    llStatus("Type a value first.");
+    return null;
+  }
+  const v = Number(box.value);
+  box.value = "";
+  return v;
+}
+
+function llStatus(msg) {
+  document.getElementById("llStatus").textContent = msg;
+}
+
+function insertHead() {
+  const v = readLLValue();
+  if (v === null) return;
+  if (llSize >= LL_MAX) { llStatus("List is full (limit 8)."); return; }
+  const node = makeNode(v);
+  node.next = llHead;   // new node points to the old head
+  llHead = node;        // head now points to the new node
+  llSize++;
+  llStatus("Inserted " + v + " at head.");
+  drawList();
+}
+
+function insertTail() {
+  const v = readLLValue();
+  if (v === null) return;
+  if (llSize >= LL_MAX) { llStatus("List is full (limit 8)."); return; }
+  const node = makeNode(v);
+  if (llHead === null) {
+    llHead = node;
+  } else {
+    let cur = llHead;
+    while (cur.next !== null) cur = cur.next;  // walk to the last node
+    cur.next = node;
+  }
+  llSize++;
+  llStatus("Inserted " + v + " at tail.");
+  drawList();
+}
+
+function deleteHead() {
+  if (llHead === null) { llStatus("Underflow: list is empty."); return; }
+  const removed = llHead.value;
+  llHead = llHead.next;
+  llSize--;
+  llStatus("Deleted head (" + removed + ").");
+  drawList();
+}
+
+function deleteValue() {
+  const v = readLLValue();
+  if (v === null) return;
+  if (llHead === null) { llStatus("Underflow: list is empty."); return; }
+  if (llHead.value === v) {
+    llHead = llHead.next;
+  } else {
+    let prev = llHead;
+    while (prev.next !== null && prev.next.value !== v) prev = prev.next;
+    if (prev.next === null) { llStatus(v + " not found."); return; }
+    prev.next = prev.next.next;  // skip over the deleted node
+  }
+  llSize--;
+  llStatus("Deleted " + v + ".");
+  drawList();
+}
+
+function drawList() {
+  const area = document.getElementById("llArea");
+  area.innerHTML = "";
+  if (llHead === null) {
+    area.textContent = "HEAD → NULL (empty list)";
+    return;
+  }
+  let cur = llHead;
+  while (cur !== null) {
+    const box = document.createElement("div");
+    box.className = "ll-node";
+    if (cur === llHead) box.classList.add("ll-head");
+    if (cur.next === null) box.classList.add("ll-tail");
+    box.textContent = cur.value;
+    area.appendChild(box);
+
+    const arrow = document.createElement("span");
+    arrow.textContent = cur.next ? "→" : "→ NULL";
+    area.appendChild(arrow);
+    cur = cur.next;
+  }
+}
+
+// ---------- GRAPH ----------
+const graphNodes = [
+  { label: "A", x: 160, y: 40 },
+  { label: "B", x: 70,  y: 110 },
+  { label: "C", x: 250, y: 110 },
+  { label: "D", x: 70,  y: 200 },
+  { label: "E", x: 250, y: 200 },
+  { label: "F", x: 160, y: 150 }
+];
+
+// adjacency list: node index -> neighbour indexes
+const graph = {
+  0: [1, 2],
+  1: [0, 3, 5],
+  2: [0, 4, 5],
+  3: [1],
+  4: [2],
+  5: [1, 2]
+};
+
+let nodeColors = {}; // index -> colour (BFS/DFS will use this)
+
+function drawGraph() {
+  let html = "";
+  // edges first, so circles sit on top
+  for (let i = 0; i < graphNodes.length; i++) {
+    for (const j of graph[i]) {
+      if (j > i) {
+        html += `<line x1="${graphNodes[i].x}" y1="${graphNodes[i].y}"
+                       x2="${graphNodes[j].x}" y2="${graphNodes[j].y}"
+                       stroke="#888" stroke-width="2"/>`;
+      }
+    }
+  }
+  // nodes
+  for (let i = 0; i < graphNodes.length; i++) {
+    const n = graphNodes[i];
+    const fill = nodeColors[i] || "#e0e0e0";
+    html += `<circle cx="${n.x}" cy="${n.y}" r="20" fill="${fill}" stroke="#333" stroke-width="2"/>
+             <text x="${n.x}" y="${n.y + 5}" text-anchor="middle"
+                   font-size="16" font-weight="bold">${n.label}</text>`;
+  }
+  document.getElementById("graphSvg").innerHTML = html;
+}
+drawGraph();
+
+function labels(list) {
+  return list.map(i => graphNodes[i].label).join(", ");
+}
+
+function graphMsg(msg) {
+  document.getElementById("graphStatus").textContent = msg;
+}
+
+function resetGraph() {
+  if (running) return;
+  nodeColors = {};
+  drawGraph();
+  graphMsg("Graph ready.");
+}
+
+async function runBFS() {
+  if (running) return;
+  running = true;
+  nodeColors = {};
+
+  const start = 0;                 // node A
+  const visited = new Set([start]);
+  const queue = [start];
+  const order = [];
+  nodeColors[start] = "#ffe082";   // yellow = in queue
+  drawGraph();
+  graphMsg("Start at A. Queue: " + labels(queue));
+  await waitIfPaused();
+  await sleep(getDelay());
+
+  while (queue.length > 0) {
+    const cur = queue.shift();     // take from the FRONT
+    nodeColors[cur] = "orange";    // orange = visiting
+    drawGraph();
+    graphMsg("Visiting " + graphNodes[cur].label + ". Queue: " + labels(queue));
+    await waitIfPaused();
+    await sleep(getDelay());
+
+    for (const nb of graph[cur]) {
+      if (!visited.has(nb)) {
+        visited.add(nb);
+        queue.push(nb);            // add to the BACK
+        nodeColors[nb] = "#ffe082";
+        drawGraph();
+        graphMsg("Found " + graphNodes[nb].label + ", added. Queue: " + labels(queue));
+        await waitIfPaused();
+        await sleep(getDelay());
+      }
+    }
+
+    nodeColors[cur] = "#81c784";   // green = done
+    order.push(cur);
+    drawGraph();
+  }
+
+  graphMsg("BFS done. Order: " + labels(order));
+  running = false;
+}
+
+async function runDFS() {
+  if (running) return;
+  running = true;
+  nodeColors = {};
+
+  const start = 0;
+  const visited = new Set([start]);
+  const stack = [start];
+  const order = [];
+  nodeColors[start] = "#ffe082";
+  drawGraph();
+  graphMsg("Start at A. Stack: " + labels(stack));
+  await waitIfPaused();
+  await sleep(getDelay());
+
+  while (stack.length > 0) {
+    const cur = stack.pop();       // take from the TOP
+    nodeColors[cur] = "orange";
+    drawGraph();
+    graphMsg("Visiting " + graphNodes[cur].label + ". Stack: " + labels(stack));
+    await waitIfPaused();
+    await sleep(getDelay());
+
+    for (const nb of graph[cur]) {
+      if (!visited.has(nb)) {
+        visited.add(nb);
+        stack.push(nb);            // add on TOP
+        nodeColors[nb] = "#ffe082";
+        drawGraph();
+        graphMsg("Found " + graphNodes[nb].label + ", added. Stack: " + labels(stack));
+        await waitIfPaused();
+        await sleep(getDelay());
+      }
+    }
+
+    nodeColors[cur] = "#81c784";
+    order.push(cur);
+    drawGraph();
+  }
+
+  graphMsg("DFS done. Order: " + labels(order));
+  running = false;
+}
+drawList();
+  </script>
+</body>
+                                        </html>
