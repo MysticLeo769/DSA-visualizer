@@ -2,6 +2,8 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DSA Lab - Visualizer</title>
+  <link rel="stylesheet" href="style.css">
   <style>
     .row { display: flex; gap: 8px; align-items: flex-end; }
     .box { width: 20px; background: navy; }
@@ -24,52 +26,92 @@
   </style>
 </head>
 <body>
-  <h1>My Visualizer</h1>
-  <button onclick="generate()">Generate</button>
-  <button onclick="autosort()">autosort</button>
-  <button id="pauseBtn" onclick="togglePause()">Pause</button>
-  <button onclick="nextStep()">Next step</button>
-  <br>
-  <input type="number" id="target" placeholder="Target" style="width:70px">
-  <button onclick="startBinarySearch()">Binary search</button>
-  
-  <p>Slow <input type="range" id="speed" min="50" max="1000" value="800"> Fast</p>
-  <p id="status">Tap Generate to start</p>
-  <div class="row" id="bars"></div>
-  <p>RED = COMPARING, AQUAMARINE = SORTED</p>
-  <hr>
-  <h2>Stack</h2>
-  <input type="number" id="stackInput" placeholder="Value" style="width:70px">
-  <button onclick="stackPush()">Push</button>
-  <button onclick="stackPop()">Pop</button>
-  <button onclick="stackPeek()">Peek</button>
-  <p id="stackStatus">Stack is empty</p>
-  <div id="stackBox"></div>
-  <hr>
-  <h2>Queue</h2>
-  <input type="number" id="queueInput" placeholder="Value" style="width:70px">
-  <button onclick="enqueue()">Enqueue</button>
-  <button onclick="dequeue()">Dequeue</button>
-  <p id="queueStatus">Queue is empty)</p>
-  <div class="queueRow" id="queueBox"></div>
-  <p>RED = FRONT, ORANGE = BACK</p>
-  <hr> 
-  <h2>Linked List</h2>
-  <input id="llValue" type="number" placeholder="Value">
-  <button onclick="insertHead()">Insert head</button>
-  <button onclick="insertTail()">Insert tail</button>
-  <button onclick="deleteHead()">Delete head</button>
-  <button onclick="deleteValue()">Delete value</button>
-  <p id="llStatus"></p>
-  <div id="llArea"></div>
-  <hr>
-  <h2>Graph (BFS / DFS)</h2>
-  <svg id="graphSvg" viewBox="0 0 320 240"
-     style="width:100%;max-width:360px;border:1px solid #ccc"></svg>
-  <p id="graphStatus">Graph ready.</p>
-  <button onclick="runBFS()">Start BFS</button>
-  <button onclick="resetGraph()">Reset</button>
-  <button onclick="runDFS()">Start DFS</button>
+<header class="site-header">
+  <a class="logo" href="index.html">&lt;/&gt; DSA <span>Lab</span></a>
+  <nav class="nav">
+    <a href="index.html"><i class="ico">🏠</i>Home</a>
+    <a href="visualizer.html" class="active"><i class="ico">📊</i>Visualizer</a>
+    <a href="judge.html"><i class="ico">⚖️</i>Judge</a>
+    <a href="about.html"><i class="ico">ℹ️</i>About</a>
+  </nav>
+</header>
+
+<main class="container">
+  <div class="chips" id="chips">
+    <button class="chip active" data-p="p-sort">Sort</button>
+    <button class="chip" data-p="p-stack">Stack</button>
+    <button class="chip" data-p="p-queue">Queue</button>
+    <button class="chip" data-p="p-list">List</button>
+    <button class="chip" data-p="p-graph">Graph</button>
+  </div>
+
+  <section class="panel card active" id="p-sort">
+    <h2>Bubble Sort and Binary Search</h2>
+    <p id="status">Tap Generate to start</p>
+    <div class="row" id="bars"></div>
+    <p class="hint">RED = COMPARING, AQUAMARINE = SORTED</p>
+    <div class="controls">
+      <button onclick="generate()">Generate</button>
+      <button onclick="autosort()">autosort</button>
+      <button id="pauseBtn" onclick="togglePause()">Pause</button>
+      <button onclick="nextStep()">Next step</button>
+    </div>
+    <div class="controls">
+      <input type="number" id="target" placeholder="Target" style="width:80px">
+      <button onclick="startBinarySearch()">Binary search</button>
+    </div>
+    <p>Slow <input type="range" id="speed" min="50" max="1000" value="800"> Fast</p>
+  </section>
+
+  <section class="panel card" id="p-stack">
+    <h2>Stack</h2>
+    <div class="controls">
+      <input type="number" id="stackInput" placeholder="Value" style="width:80px">
+      <button onclick="stackPush()">Push</button>
+      <button onclick="stackPop()">Pop</button>
+      <button onclick="stackPeek()">Peek</button>
+    </div>
+    <p id="stackStatus">Stack is empty</p>
+    <div id="stackBox"></div>
+  </section>
+
+  <section class="panel card" id="p-queue">
+    <h2>Queue</h2>
+    <div class="controls">
+      <input type="number" id="queueInput" placeholder="Value" style="width:80px">
+      <button onclick="enqueue()">Enqueue</button>
+      <button onclick="dequeue()">Dequeue</button>
+    </div>
+    <p id="queueStatus">Queue is empty</p>
+    <div class="queueRow" id="queueBox"></div>
+    <p class="hint">RED = FRONT, ORANGE = BACK</p>
+  </section>
+
+  <section class="panel card" id="p-list">
+    <h2>Linked List</h2>
+    <div class="controls">
+      <input id="llValue" type="number" placeholder="Value" style="width:80px">
+      <button onclick="insertHead()">Insert head</button>
+      <button onclick="insertTail()">Insert tail</button>
+      <button onclick="deleteHead()">Delete head</button>
+      <button onclick="deleteValue()">Delete value</button>
+    </div>
+    <p id="llStatus"></p>
+    <div id="llArea"></div>
+  </section>
+
+  <section class="panel card" id="p-graph">
+    <h2>Graph (BFS / DFS)</h2>
+    <svg id="graphSvg" viewBox="0 0 320 240"
+         style="width:100%;max-width:360px;border:1px solid #ccc"></svg>
+    <p id="graphStatus">Graph ready.</p>
+    <div class="controls">
+      <button onclick="runBFS()">Start BFS</button>
+      <button onclick="runDFS()">Start DFS</button>
+      <button onclick="resetGraph()">Reset</button>
+    </div>
+  </section>
+</main>
 
   <script>
     let numbers = [];
@@ -595,5 +637,16 @@ async function runDFS() {
 }
 drawList();
   </script>
+
+<script>
+document.getElementById("chips").addEventListener("click", function(e){
+  var chip = e.target.closest(".chip");
+  if(!chip) return;
+  document.querySelectorAll(".chip").forEach(function(c){c.classList.remove("active")});
+  document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("active")});
+  chip.classList.add("active");
+  document.getElementById(chip.dataset.p).classList.add("active");
+});
+</script>
 </body>
-                                        </html>
+</html>
