@@ -85,4 +85,31 @@ a{text-decoration:none;color:inherit}
   .btn-blue{background:var(--orange)}
   .btn-green{background:var(--blue)}
   .topics{grid-template-columns:repeat(3,1fr);gap:16px}
-  }
+}
+
+/* Day 2: visualizer page */
+h2{margin-bottom:10px}
+p{margin:8px 0}
+.hint{font-size:.8rem;color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px}
+.chip{
+  flex:0 0 auto;border:none;background:var(--card);color:var(--text);
+  padding:10px 18px;border-radius:12px;font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.chip.active{background:var(--blue);color:#fff}
+.panel{display:none}
+.panel.active{display:block}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.panel button{
+  padding:10px 14px;border-radius:10px;border:1.5px solid var(--blue);
+  background:#fff;color:var(--blue);font-weight:700;
+}
+.panel button:active{background:var(--blue);color:#fff}
+.panel input[type=number]{padding:9px;border-radius:10px;border:1.5px solid #ccd3e0}
+
+@media (min-width:768px){
+  .container{display:grid;grid-template-columns:200px 1fr;gap:20px}
+  .chips{flex-direction:column;overflow:visible}
+  .chip{text-align:left}
+}
