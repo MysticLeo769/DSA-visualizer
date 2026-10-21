@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code Judge - DSA Lab</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- paste header and bottom nav from visualizer.html here -->
+<header class="site-header">
+  <a class="logo" href="index.html">&lt;/&gt; DSA <span>Lab</span></a>
+  <nav class="nav">
+    <a href="index.html"><i class="ico">🏠</i>Home</a>
+    <a href="visualizer.html" class="active"><i class="ico">📊</i>Visualizer</a>
+    <a href="judge.html"><i class="ico">⚖️</i>Judge</a>
+    <a href="about.html"><i class="ico">ℹ️</i>About</a>
+  </nav>
+</header>
+  
+<main>
+  <h1>Practice Problems</h1>
+  <div id="problemList"></div>
+</main>
+
+<script src="problems.js"></script>
+<script>
+const listBox = document.getElementById("problemList");
+let html = "";
+for (const p of problems) {
+  html += `<a class="card" href="solve.html?id=${p.id}">
+             <h3>${p.title}</h3>
+             <p>${p.difficulty}</p>
+           </a>`;
+}
+listBox.innerHTML = html;
+</script>
+</body>
+</html>
