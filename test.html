@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API test</title>
+</head>
+<body style="font-family:sans-serif;padding:16px">
+<h2>Judge API test</h2>
+<button onclick="testPiston()">Test Piston</button>
+<button onclick="testJudge0()">Test Judge0</button>
+<pre id="out">Press a button...</pre>
+
+<script>
+const code = "n = int(input())\nprint(n * 2)";
+const stdin = "21";
+const out = document.getElementById("out");
+
+async function testPiston() {
+  out.textContent = "Piston: running...";
+  try {
+    const res = await fetch("https://emkc.org/api/v2/piston/execute", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        language: "python",
+        version: "*",
+        files: [{ content: code }],
+        stdin: stdin
+      })
+    });
+    const text = await res.text();
+    out.textContent = "Piston status " + res.status + "\n" + text;
+  } catch (e) {
+    out.textContent = "Piston FAILED: " + e;
+  }
+}
+
+async function testJudge0() {
+  out.textContent = "Judge0: running...";
+  try {
+    const res = await fetch(
+      "https://ce.judge0.com/submissions?base64_encoded=false&wait=true",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          language_id: 71,
+          source_code: code,
+          stdin: stdin
+        })
+      }
+    );
+    const text = await res.text();
+    out.textContent = "Judge0 status " + res.status + "\n" + text;
+  } catch (e) {
+    out.textContent = "Judge0 FAILED: " + e;
+  }
+}
+</script>
+</body>
+</html>
