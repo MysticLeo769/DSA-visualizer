@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solve - DSA Lab</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<!-- paste header and bottom nav here (Judge link active) -->
+<header class="site-header">
+  <a class="logo" href="index.html">&lt;/&gt; DSA <span>Lab</span></a>
+  <nav class="nav">
+    <a href="index.html"><i class="ico">🏠</i>Home</a>
+    <a href="visualizer.html"><i class="ico">📊</i>Visualizer</a>
+    <a href="judge.html" class="active"><i class="ico">⚖️</i>Judge</a>
+    <a href="about.html"><i class="ico">ℹ️</i>About</a>
+  </nav>
+</header>
+<main>
+  <a href="judge.html">← All problems</a>
+  <h1 id="title"></h1>
+  <p id="difficulty"></p>
+  <p id="statement"></p>
+  <textarea id="code" rows="12" style="width:100%;font-family:monospace"></textarea>
+  <button id="submitBtn">Submit</button>
+  <div id="results"></div>
+</main>
+
+<script src="problems.js"></script>
+<script>
+const id = Number(new URLSearchParams(location.search).get("id"));
+const problem = problems.find(p => p.id === id);
+
+if (problem) {
+  document.getElementById("title").textContent = problem.title;
+  document.getElementById("difficulty").textContent = problem.difficulty;
+  document.getElementById("statement").textContent = problem.statement;
+  document.getElementById("code").value = problem.starter;
+} else {
+  document.getElementById("title").textContent = "Problem not found";
+}
+</script>
+</body>
+</html>
