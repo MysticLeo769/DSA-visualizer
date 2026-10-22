@@ -41,5 +41,56 @@ if (problem) {
   document.getElementById("title").textContent = "Problem not found";
 }
 </script>
+
+<script>
+const API_URL = "https://ce.judge0.com/submissions?base64_encoded=false&wait=true";
+
+function esc(t) {
+  return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+}
+
+async function runOne(code, input) {
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ source_code: code, language_id: 71, stdin: input })
+  });
+  return await res.json();
+}
+
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("submitBtn");
+  const box = document.getElementById("results");
+  const code = document.getElementById("code").value;
+  const total = problem.tests.length;
+  let passed = 0;
+  let html = "";
+  btn.disabled = true;
+
+  for (let i = 0; i < total; i++) {
+    box.textContent = "Running test " + (i + 1) + " of " + total + "...";
+    const t = problem.tests[i];
+    try {
+      const r = await runOne(code, t.input);
+      const got = (r.stdout || "").trim();
+      const want = String(t.expected).trim();
+      if (r.status.id === 3 && got === want) {
+        passed++;
+        html += `<div class="pass">Test ${i + 1}: Passed</div>`;
+      } else if (r.status.id !== 3) {
+        const err = r.compile_output || r.stderr || "";
+        html += `<div class="fail">Test ${i + 1}: ${esc(r.status.description)}<pre>${esc(err)}</pre></div>`;
+      } else {
+        html += `<div class="fail">Test ${i + 1}: Failed<pre>Expected: ${esc(want)}\nGot: ${esc(got)}</pre></div>`;
+      }
+    } catch (e) {
+      html += `<div class="fail">Test ${i + 1}: Could not reach the judge</div>`;
+    }
+  }
+
+  box.innerHTML = `<h3>${passed} / ${total} passed</h3>` + html;
+  btn.disabled = false;
+});
+</script>
 </body>
 </html>
