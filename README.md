@@ -12,7 +12,7 @@ An interactive tool that shows how data structures and algorithms work, step by 
 ![Sorting visualization](screenshot_1.jpg)
 
 
-
+![homescreen](Screenshot.jpg)
 
 ![Step-by-step view](screenshot_2.jpg)
 
