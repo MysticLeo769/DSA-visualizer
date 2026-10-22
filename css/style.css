@@ -113,3 +113,8 @@ p{margin:8px 0}
   .chips{flex-direction:column;overflow:visible}
   .chip{text-align:left}
 }
+
+.pass, .fail { padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; }
+.pass { background: #dcfce7; color: #166534; }
+.fail { background: #fee2e2; color: #991b1b; }
+.fail pre { margin: 6px 0 0; white-space: pre-wrap; }
