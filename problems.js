@@ -58,5 +58,42 @@ const problems = [
       { input: "((", expected: "NO" },
       { input: "([)]", expected: "NO" }
     ]
+  },
+  {
+    id: 4,
+    title: "Find Maximum",
+    difficulty: "Easy",
+    statement:
+      "Given n numbers, print the largest one.\n\n" +
+      "Input:\nLine 1: n\nLine 2: n integers separated by spaces\n\n" +
+      "Output:\nThe largest number.",
+    starter:
+      "n = int(input())\n" +
+      "nums = list(map(int, input().split()))\n" +
+      "# write your code below\n",
+    tests: [
+      { input: "3\n1 5 3", expected: "5" },
+      { input: "1\n7", expected: "7" },
+      { input: "4\n-5 -2 -9 -1", expected: "-1" },
+      { input: "5\n10 20 30 40 50", expected: "50" }
+    ]
+  },
+  {
+    id: 5,
+    title: "Palindrome Check",
+    difficulty: "Easy",
+    statement:
+      "Given a word, print YES if it reads the same forwards and backwards, otherwise print NO.\n\n" +
+      "Input:\nA single lowercase word\n\n" +
+      "Output:\nYES or NO",
+    starter:
+      "s = input().strip()\n" +
+      "# write your code below\n",
+    tests: [
+      { input: "madam", expected: "YES" },
+      { input: "hello", expected: "NO" },
+      { input: "a", expected: "YES" },
+      { input: "abba", expected: "YES" }
+    ]
   }
 ];
