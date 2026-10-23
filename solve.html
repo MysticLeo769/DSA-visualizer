@@ -63,30 +63,33 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
   const box = document.getElementById("results");
   const code = document.getElementById("code").value;
   const total = problem.tests.length;
+  btn.disabled = true;
+  box.textContent = "Running all " + total + " tests...";
+
+  const results = await Promise.all(
+    problem.tests.map(t => runOne(code, t.input).catch(() => null))
+  );
+
   let passed = 0;
   let html = "";
-  btn.disabled = true;
-
-  for (let i = 0; i < total; i++) {
-    box.textContent = "Running test " + (i + 1) + " of " + total + "...";
+  results.forEach((r, i) => {
     const t = problem.tests[i];
-    try {
-      const r = await runOne(code, t.input);
-      const got = (r.stdout || "").trim();
-      const want = String(t.expected).trim();
-      if (r.status.id === 3 && got === want) {
-        passed++;
-        html += `<div class="pass">Test ${i + 1}: Passed</div>`;
-      } else if (r.status.id !== 3) {
-        const err = r.compile_output || r.stderr || "";
-        html += `<div class="fail">Test ${i + 1}: ${esc(r.status.description)}<pre>${esc(err)}</pre></div>`;
-      } else {
-        html += `<div class="fail">Test ${i + 1}: Failed<pre>Expected: ${esc(want)}\nGot: ${esc(got)}</pre></div>`;
-      }
-    } catch (e) {
-      html += `<div class="fail">Test ${i + 1}: Could not reach the judge</div>`;
+    if (!r || !r.status) {
+      html += `<div class="fail">Test ${i + 1}: Judge busy or unreachable</div>`;
+      return;
     }
-  }
+    const got = (r.stdout || "").trim();
+    const want = String(t.expected).trim();
+    if (r.status.id === 3 && got === want) {
+      passed++;
+      html += `<div class="pass">Test ${i + 1}: Passed</div>`;
+    } else if (r.status.id !== 3) {
+      const err = r.compile_output || r.stderr || "";
+      html += `<div class="fail">Test ${i + 1}: ${esc(r.status.description)}<pre>${esc(err)}</pre></div>`;
+    } else {
+      html += `<div class="fail">Test ${i + 1}: Failed<pre>Expected: ${esc(want)}\nGot: ${esc(got)}</pre></div>`;
+    }
+  });
 
   box.innerHTML = `<h3>${passed} / ${total} passed</h3>` + html;
   btn.disabled = false;
