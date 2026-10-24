@@ -63,6 +63,12 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
   const box = document.getElementById("results");
   const code = document.getElementById("code").value;
   const total = problem.tests.length;
+
+  if (code.trim() === "" || code.trim() === problem.starter.trim()) {
+    box.innerHTML = '<div class="fail">Write some code first</div>';
+    return;
+  }
+
   btn.disabled = true;
   box.textContent = "Running all " + total + " tests...";
 
