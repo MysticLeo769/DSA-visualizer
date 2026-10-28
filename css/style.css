@@ -87,7 +87,7 @@ a{text-decoration:none;color:inherit}
   .topics{grid-template-columns:repeat(3,1fr);gap:16px}
 }
 
-/* Day 2: visualizer page */
+/*visualizer page*/
 h2{margin-bottom:10px}
 p{margin:8px 0}
 .hint{font-size:.8rem;color:var(--muted)}
@@ -208,7 +208,7 @@ a{text-decoration:none;color:inherit}
   .topics{grid-template-columns:repeat(3,1fr);gap:16px}
 }
 
-/* Day 2: visualizer page */
+/*visualizer page */
 h2{margin-bottom:10px}
 p{margin:8px 0}
 .hint{font-size:.8rem;color:var(--muted)}
@@ -257,3 +257,9 @@ a.card p{color:var(--muted);margin:0}
   font-weight:700;font-size:1rem}
 #submitBtn:disabled{opacity:.6}
 #results h3{margin-bottom:10px}
+
+/*about page */
+.about-card{margin-bottom:12px}
+.about-card h3{margin-bottom:6px}
+.about-card ul{padding-left:20px;margin:6px 0}
+.about-card li{margin:4px 0}
