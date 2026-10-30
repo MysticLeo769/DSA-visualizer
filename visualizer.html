@@ -111,6 +111,8 @@
       <button onclick="runBFS()">Start BFS</button>
       <button onclick="runDFS()">Start DFS</button>
       <button onclick="resetGraph()">Reset</button>
+      <button id="graphPauseBtn" onclick="toggleGraphPause()">Pause</button>
+      <button onclick="graphNextStep()">Next step</button>
     </div>
     <p>Slow <input type="range" id="graphSpeed" min="50" max="1000" value="800"> Fast</p>
   </section>
@@ -169,11 +171,31 @@
       return 1050 - document.getElementById("speed").value;
     }
 
+    let graphPaused = false;
+    let graphStepOnce = false;
+
     async function waitIfPaused() {
-      while (paused && !stepOnce) {
+      const onGraph = document.getElementById("p-graph").classList.contains("active");
+      if (onGraph) {
+        while (graphPaused && !graphStepOnce) {
         await sleep(50);
+        }
+      graphStepOnce = false;
+      } else {
+        while (paused && !stepOnce) {
+          await sleep(50);
+        }
+        stepOnce = false;
       }
-    stepOnce = false;
+    }
+
+    function toggleGraphPause() {
+      graphPaused = !graphPaused;
+      document.getElementById("graphPauseBtn").innerText = graphPaused ? "Resume" : "Pause";
+    }
+
+    function graphNextStep() {
+      if (graphPaused) graphStepOnce = true;
     }
 
     function togglePause() {
