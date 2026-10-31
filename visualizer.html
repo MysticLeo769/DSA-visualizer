@@ -38,6 +38,7 @@
   </nav>
 </header>
 
+<div class="card" id="infoPanel"></div>
 <main class="container">
   <div class="chips" id="chips">
     <button class="chip active" data-p="p-sort">Sort</button>
@@ -673,5 +674,27 @@ document.getElementById("chips").addEventListener("click", function(e){
   document.getElementById(chip.dataset.p).classList.add("active");
 });
 </script>
+
+<script>
+var info = {
+  "p-sort": "<h3>Bubble sort</h3><p>Compare neighbours and swap if out of order. The biggest value moves to the end each pass.</p><p><b>Time:</b> O(n²), best case O(n). <b>Space:</b> O(1)</p><h3>Binary search</h3><p>Check the middle and discard half each step. The array must be sorted.</p><p><b>Time:</b> O(log n). <b>Space:</b> O(1)</p>",
+  "p-stack": "<h3>Stack (LIFO)</h3><p>Last in, first out. Push and pop happen at the top.</p><p><b>Time:</b> O(1) per operation. <b>Space:</b> O(n)</p>",
+  "p-queue": "<h3>Queue (FIFO)</h3><p>First in, first out. Enqueue at the back, dequeue at the front.</p><p><b>Time:</b> O(1) per operation. <b>Space:</b> O(n)</p>",
+  "p-list": "<h3>Linked list</h3><p>Nodes joined by next pointers. Reaching a node means walking from the head.</p><p><b>Time:</b> insert head O(1); insert tail and delete by value O(n). <b>Space:</b> O(n)</p>",
+  "p-graph": "<h3>BFS</h3><p>Visits level by level using a queue.</p><h3>DFS</h3><p>Goes deep first using a stack.</p><p><b>Time:</b> O(V + E) for both. <b>Space:</b> O(V)</p>"
+};
+
+function showInfo(id) {
+  document.getElementById("infoPanel").innerHTML = info[id];
+}
+
+document.getElementById("chips").addEventListener("click", function(e) {
+  var chip = e.target.closest(".chip");
+  if (!chip) return;
+  showInfo(chip.dataset.p);
+});
+
+showInfo("p-sort");
+  </script>
 </body>
 </html>
